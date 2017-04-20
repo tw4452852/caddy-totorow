@@ -13,13 +13,13 @@ type Checker func(post storage.Poster) bool
 
 func CheckAll(require string) Checker {
 	return func(p storage.Poster) bool {
-		if strings.Contains(string(p.Title()), require) {
+		if strings.Contains(p.Title(), require) {
 			return true
 		}
 		if tagsContain(p.Tags(), require) {
 			return true
 		}
-		if strings.Contains(string(p.Content()), require) {
+		if strings.Contains(p.Content(), require) {
 			return true
 		}
 		return false

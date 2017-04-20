@@ -184,11 +184,11 @@ func getRss() string {
 	for i := range feed.Entry {
 		p := r.Content[i]
 		feed.Entry[i] = &atom.Entry{
-			Title:   string(p.Title()),
+			Title:   p.Title(),
 			ID:      p.Key(),
 			Updated: atom.Time(p.Date()),
 			Link:    []atom.Link{{Href: "/posts/" + p.Key()}},
-			Content: &atom.Text{Body: string(p.Content()), Type: "html"},
+			Content: &atom.Text{Body: p.Content(), Type: "html"},
 		}
 	}
 
