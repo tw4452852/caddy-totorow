@@ -1,0 +1,24 @@
+From 1302553d7644150386f9db35d0e266f312aea0c6 Mon Sep 17 00:00:00 2001
+From: Tw <tw19881113@gmail.com>
+Date: Thu, 20 Apr 2017 08:32:41 +0800
+Subject: [PATCH] add totorow plugin
+
+Signed-off-by: Tw <tw19881113@gmail.com>
+---
+ caddyhttp/caddyhttp.go | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/caddyhttp/caddyhttp.go b/caddyhttp/caddyhttp.go
+index 2f1d8dc..17b238a 100644
+--- a/caddyhttp/caddyhttp.go
++++ b/caddyhttp/caddyhttp.go
+@@ -31,4 +31,6 @@ import (
+ 	_ "github.com/mholt/caddy/caddyhttp/timeouts"
+ 	_ "github.com/mholt/caddy/caddyhttp/websocket"
+ 	_ "github.com/mholt/caddy/startupshutdown"
++
++	_ "github.com/tw4452852/caddy-totorow"
+ )
+-- 
+2.7.3
+
