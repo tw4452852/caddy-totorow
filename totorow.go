@@ -25,6 +25,12 @@ func (t *Totorow) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error)
 			}
 			return serveImage(w, r, key, path)
 		}
+
+		// handle playground
+		if httpserver.Path(r.URL.Path).Matches(t.BaseURL+"compile") ||
+			httpserver.Path(r.URL.Path).Matches(t.BaseURL+"share") {
+			return serverPlay(w, r)
+		}
 	}
 
 	return t.Next.ServeHTTP(w, r)
@@ -56,6 +62,21 @@ func serveImage(w http.ResponseWriter, r *http.Request, key, path string) (int, 
 	defer sta.Close()
 
 	_, err := io.Copy(w, sta)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return 0, nil
+}
+
+func serverPlay(w http.ResponseWriter, r *http.Request) (int, error) {
+	const baseURL = "http://play.golang.org"
+	url := baseURL + r.URL.Path
+	res, err := http.DefaultClient.Post(url, r.Header.Get("Content-type"), r.Body)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	defer res.Body.Close()
+	_, err = io.Copy(w, res.Body)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
