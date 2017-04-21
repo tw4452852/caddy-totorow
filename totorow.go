@@ -29,7 +29,7 @@ func (t *Totorow) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error)
 		// handle playground
 		if httpserver.Path(r.URL.Path).Matches(t.BaseURL+"compile") ||
 			httpserver.Path(r.URL.Path).Matches(t.BaseURL+"share") {
-			return serverPlay(w, r)
+			return servePlay(w, r)
 		}
 	}
 
@@ -68,8 +68,8 @@ func serveImage(w http.ResponseWriter, r *http.Request, key, path string) (int, 
 	return 0, nil
 }
 
-func serverPlay(w http.ResponseWriter, r *http.Request) (int, error) {
-	const baseURL = "http://play.golang.org"
+func servePlay(w http.ResponseWriter, r *http.Request) (int, error) {
+	const baseURL = "https://play.golang.org"
 	url := baseURL + r.URL.Path
 	res, err := http.DefaultClient.Post(url, r.Header.Get("Content-type"), r.Body)
 	if err != nil {
