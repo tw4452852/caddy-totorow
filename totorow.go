@@ -19,24 +19,35 @@ func (t *Totorow) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error)
 	if httpserver.Path(r.URL.Path).Matches(t.BaseURL) {
 		// handle post's image
 		if httpserver.Path(r.URL.Path).Matches(t.BaseURL + "images/") {
-			pathBegin := strings.LastIndex(r.URL.Path, "/")
-			keyBegin := strings.LastIndex(r.URL.Path[:pathBegin], "/")
-			if pathBegin == -1 || keyBegin == -1 {
-				return http.StatusInternalServerError, errors.New("image url invalid")
+			key, path, err := getKeyAndPath(strings.TrimPrefix(r.URL.Path, t.BaseURL+"images/"))
+			if err != nil {
+				return http.StatusInternalServerError, err
 			}
-			key := r.URL.Path[keyBegin+1 : pathBegin]
-			path := r.URL.Path[pathBegin+1:]
-			if path == "" || key == "" {
-				return http.StatusInternalServerError, errors.New("image path or key invalid")
-			}
-			return serveImage(w, r, path, key)
+			return serveImage(w, r, key, path)
 		}
 	}
 
 	return t.Next.ServeHTTP(w, r)
 }
 
-func serveImage(w http.ResponseWriter, r *http.Request, path, key string) (int, error) {
+var (
+	imageURLInvalid = errors.New("image url invalid")
+)
+
+func getKeyAndPath(url string) (string, string, error) {
+	pathBegin := strings.Index(url, "/")
+	if pathBegin == -1 {
+		return "", "", imageURLInvalid
+	}
+	key := url[:pathBegin]
+	path := url[pathBegin+1:]
+	if path == "" || key == "" {
+		return "", "", imageURLInvalid
+	}
+	return key, path, nil
+}
+
+func serveImage(w http.ResponseWriter, r *http.Request, key, path string) (int, error) {
 	p := getOne(key)
 	if p == nil {
 		return http.StatusInternalServerError, errors.New("can't find related post")
@@ -44,6 +55,9 @@ func serveImage(w http.ResponseWriter, r *http.Request, path, key string) (int, 
 	sta := p.Static(path)
 	defer sta.Close()
 
-	io.Copy(w, sta)
+	_, err := io.Copy(w, sta)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
 	return 0, nil
 }
