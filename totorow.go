@@ -61,6 +61,7 @@ func serveImage(w http.ResponseWriter, r *http.Request, key, path string) (int, 
 	sta := p.Static(path)
 	defer sta.Close()
 
+	w.WriteHeader(http.StatusOK)
 	_, err := io.Copy(w, sta)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -76,6 +77,7 @@ func servePlay(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 	defer res.Body.Close()
+	w.WriteHeader(http.StatusOK)
 	_, err = io.Copy(w, res.Body)
 	if err != nil {
 		return http.StatusInternalServerError, err
