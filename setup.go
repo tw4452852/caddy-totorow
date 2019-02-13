@@ -14,6 +14,10 @@ import (
 	"golang.org/x/tools/blog/atom"
 )
 
+var (
+	s storage.Storager
+)
+
 func init() {
 	httpserver.RegisterDevDirective("totorow", "")
 
@@ -64,7 +68,11 @@ func initStorage(path string) error {
 		return err
 	}
 
-	storage.Init(abs)
+	s, err = storage.New(abs)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -79,7 +87,7 @@ func registerTemplateFuncs() {
 }
 
 func getFull() []storage.Poster {
-	result, err := storage.Get()
+	result, err := s.Get()
 	if err != nil {
 		log.Printf("getFull failed: %v\n", err)
 		return nil
@@ -96,7 +104,7 @@ func (pk postKey) Key() string {
 }
 
 func getOne(key string) storage.Poster {
-	result, err := storage.Get(postKey(key))
+	result, err := s.Get(postKey(key))
 	if err != nil {
 		log.Printf("getOne failed: %v\n", err)
 		return nil
@@ -154,7 +162,7 @@ func filterSearch(search string, posts []storage.Poster) []storage.Poster {
 }
 
 func getRss() string {
-	r, err := storage.Get()
+	r, err := s.Get()
 	if err != nil {
 		return err.Error()
 	}
