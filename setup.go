@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"log"
+	"net/url"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -195,7 +196,7 @@ func getRss() string {
 			Title:   p.Title(),
 			ID:      p.Key(),
 			Updated: atom.Time(p.Date()),
-			Link:    []atom.Link{{Href: "/posts/" + p.Key()}},
+			Link:    []atom.Link{{Href: "/post?q=" + url.QueryEscape(p.Key())}},
 			Content: &atom.Text{Body: p.Content(), Type: "html"},
 		}
 	}
